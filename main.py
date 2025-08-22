@@ -24,6 +24,7 @@ app.add_middleware(
 )
 
 repo_name = "Amboara001/t5-betsim-mlg-translator"
+hf_token = "mgoo"
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
