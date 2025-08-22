@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Betsimisaraka to Malagasy Translator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #7e7e7ed7 ; color: #E0E0E0; }
+    </style>
+</head>
+<body class="p-4 sm:p-8 flex items-center justify-center min-h-screen">
+    <div class="bg-gray-100 p-6 sm:p-10 rounded-3xl shadow-2xl w-full max-w-2xl transform transition-all duration-300 ease-in-out">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-center text-[#087754] mb-6">
+            Fandikan-teny Betsimisaraka - Malagasy
+        </h1>
+        <p class="text-center text-gray-800 mb-8">
+            Handika teny Betsimisaraka ho amin'ny teny Malagasy ofisialy.
+        </p>
+        <div class="mb-6">
+            <label for="input-text" class="block text-gray-600 text-sm font-semibold mb-2">Teny na lahatsoratra Betsimisaraka </label>
+            <textarea
+                id="input-text"
+                rows="6"
+                class="w-full p-4 text-gray-800 bg-gray-200 rounded-xl border border-gray-600 focus:outline-none focus:border-teal-500 transition duration-300 placeholder-gray-500 resize-none"
+                placeholder="Soraty eto ny lahatsoratra betsimisaraka..."
+            ></textarea>
+        </div>
+        <button
+            id="translate-button"
+            class="w-full bg-[#087743] hover:bg-[#087759] text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50 shadow-lg"
+        >
+            Adika
+        </button>
+        <div class="mt-8">
+            <label for="output-text" class="block text-gray-800 text-sm font-semibold mb-2">Dikan-teny amin'ny Malagasy ofisialy</label>
+            <textarea
+                id="output-text"
+                rows="6"
+                readonly
+                class="w-full p-4 text-gray-800 bg-gray-200 rounded-xl border border-gray-600 focus:outline-none placeholder-gray-500 resize-none "
+                placeholder="Eo ampandikana teny..."
+            ></textarea>
+        </div>
+        <div id="status-message" class="text-center mt-4 text-gray-400 text-sm italic min-h-[1.5rem]"></div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputTextarea = document.getElementById('input-text');
+            const outputTextarea = document.getElementById('output-text');
+            const translateButton = document.getElementById('translate-button');
+            const statusMessage = document.getElementById('status-message');
+
+            const API_URL = "http://127.0.0.1:8000/translate";
+
+            translateButton.addEventListener('click', async () => {
+                const textToTranslate = inputTextarea.value.trim();
+                if (textToTranslate === "") {
+                    outputTextarea.value = "Ampidiro ny lahatsoratra Betsimisaraka ho adika.";
+                    return;
+                }
+                
+                translateButton.disabled = true;
+                statusMessage.textContent = "Adika...";
+                outputTextarea.value = "";
+
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST', // <--- This is the key line
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ text: textToTranslate })
+                    });
+                    const result = await response.json();
+                    
+                    if (response.ok && result.translated_text) {
+                        outputTextarea.value = result.translated_text;
+                        statusMessage.textContent = "Translation complete!";
+                    } else {
+                        outputTextarea.value = result.error || "Could not get a translation. Please try again.";
+                        statusMessage.textContent = "Error: Translation failed.";
+                    }
+                } catch (error) {
+                    console.error('Translation error:', error);
+                    outputTextarea.value = "An error occurred. Make sure the backend server is running.";
+                    statusMessage.textContent = "Error: An unexpected error occurred.";
+                } finally {
+                    setTimeout(() => {
+                        translateButton.disabled = false;
+                        statusMessage.textContent = "";
+                    }, 2000);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
