@@ -1,96 +1,149 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="mg">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Betsimisaraka to Malagasy Translator</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Betsimisaraka ↔ Malagasy Translator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #7e7e7ed7 ; color: #E0E0E0; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #e0e7ef 0%, #b7e2d2 100%); }
+        .swap-btn { transition: transform 0.2s; }
+        .swap-btn:active { transform: rotate(180deg) scale(1.1); }
     </style>
 </head>
-<body class="p-4 sm:p-8 flex items-center justify-center min-h-screen">
-    <div class="bg-gray-100 p-6 sm:p-10 rounded-3xl shadow-2xl w-full max-w-2xl transform transition-all duration-300 ease-in-out">
-        <h1 class="text-3xl sm:text-4xl font-extrabold text-center text-[#087754] mb-6">
-            Fandikan-teny Betsimisaraka - Malagasy
+<body class="min-h-screen flex items-center justify-center">
+    <div class="bg-white/90 p-8 rounded-3xl shadow-2xl w-full max-w-2xl">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-center text-[#087754] mb-2 tracking-tight">
+            Fandikan-teny Betsimisaraka ↔ Malagasy
         </h1>
-        <p class="text-center text-gray-800 mb-8">
-            Handika teny Betsimisaraka ho amin'ny teny Malagasy ofisialy.
+        <p class="text-center text-gray-700 mb-8">
+            Mandika teny Betsimisaraka sy Malagasy ofisialy amin'ny lafiny roa.
         </p>
-        <div class="mb-6">
-            <label for="input-text" class="block text-gray-600 text-sm font-semibold mb-2">Teny na lahatsoratra Betsimisaraka </label>
-            <textarea
-                id="input-text"
-                rows="6"
-                class="w-full p-4 text-gray-800 bg-gray-200 rounded-xl border border-gray-600 focus:outline-none focus:border-teal-500 transition duration-300 placeholder-gray-500 resize-none"
-                placeholder="Soraty eto ny lahatsoratra betsimisaraka..."
-            ></textarea>
+        <div class="flex flex-col sm:flex-row items-center gap-4 mb-6">
+            <div class="flex-1 w-full">
+                <label id="input-label" for="input-text" class="block text-gray-600 text-sm font-semibold mb-2 transition-all">
+                    Teny na lahatsoratra Betsimisaraka
+                </label>
+                <textarea
+                    id="input-text"
+                    rows="5"
+                    class="w-full p-4 text-gray-800 bg-gray-100 rounded-xl border border-gray-300 focus:outline-none focus:border-[#087754] transition placeholder-gray-400 resize-none"
+                    placeholder="Soraty eto ny lahatsoratra..."
+                ></textarea>
+            </div>
+            <button id="swap-btn" type="button" aria-label="Swap translation direction"
+                class="swap-btn bg-[#087754] hover:bg-[#0a9e6c] text-white rounded-full p-3 shadow-lg flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#087754] focus:ring-opacity-50"
+                title="Swap translation direction">
+                <!-- Heroicons arrow-path (swap) -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 17v1a3 3 0 003 3h10m0-4v-1a3 3 0 00-3-3H7m0 4l-4-4m0 0l4-4m-4 4h16" />
+                </svg>
+            </button>
+            <div class="flex-1 w-full">
+                <label id="output-label" for="output-text" class="block text-gray-600 text-sm font-semibold mb-2 transition-all">
+                    Dikan-teny amin'ny Malagasy ofisialy
+                </label>
+                <textarea
+                    id="output-text"
+                    rows="5"
+                    readonly
+                    class="w-full p-4 text-gray-800 bg-gray-100 rounded-xl border border-gray-300 focus:outline-none placeholder-gray-400 resize-none"
+                    placeholder="Dikan-teny hiseho eto..."
+                ></textarea>
+            </div>
         </div>
         <button
             id="translate-button"
-            class="w-full bg-[#087743] hover:bg-[#087759] text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50 shadow-lg"
+            class="w-full bg-[#087754] hover:bg-[#0a9e6c] text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#087754] focus:ring-opacity-50 shadow-lg"
         >
             Adika
         </button>
-        <div class="mt-8">
-            <label for="output-text" class="block text-gray-800 text-sm font-semibold mb-2">Dikan-teny amin'ny Malagasy ofisialy</label>
-            <textarea
-                id="output-text"
-                rows="6"
-                readonly
-                class="w-full p-4 text-gray-800 bg-gray-200 rounded-xl border border-gray-600 focus:outline-none placeholder-gray-500 resize-none "
-                placeholder="Eo ampandikana teny..."
-            ></textarea>
-        </div>
-        <div id="status-message" class="text-center mt-4 text-gray-400 text-sm italic min-h-[1.5rem]"></div>
+        <div id="status-message" class="text-center mt-4 text-gray-500 text-sm italic min-h-[1.5rem]"></div>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const inputTextarea = document.getElementById('input-text');
             const outputTextarea = document.getElementById('output-text');
             const translateButton = document.getElementById('translate-button');
+            const swapBtn = document.getElementById('swap-btn');
             const statusMessage = document.getElementById('status-message');
+            const inputLabel = document.getElementById('input-label');
+            const outputLabel = document.getElementById('output-label');
 
-            const API_URL = "http://127.0.0.1:8000/translate";
+            // API endpoints
+            const API_BMM_MG = "http://127.0.0.1:8000/translate-bmm-to-mg";
+            const API_MG_BMM = "http://127.0.0.1:8000/translate-mg-to-bmm";
+
+            // State: true = Betsimisaraka -> Malagasy, false = Malagasy -> Betsimisaraka
+            let isBmmToMg = true;
+
+            function updateLabels() {
+                if (isBmmToMg) {
+                    inputLabel.textContent = "Teny na lahatsoratra Betsimisaraka";
+                    inputTextarea.placeholder = "Soraty eto ny lahatsoratra betsimisaraka...";
+                    outputLabel.textContent = "Dikan-teny amin'ny Malagasy ofisialy";
+                    outputTextarea.placeholder = "Dikan-teny Malagasy ofisialy...";
+                } else {
+                    inputLabel.textContent = "Teny na lahatsoratra Malagasy ofisialy";
+                    inputTextarea.placeholder = "Soraty eto ny lahatsoratra malagasy ofisialy...";
+                    outputLabel.textContent = "Dikan-teny Betsimisaraka";
+                    outputTextarea.placeholder = "Dikan-teny Betsimisaraka...";
+                }
+                inputTextarea.value = "";
+                outputTextarea.value = "";
+                statusMessage.textContent = "";
+            }
+
+            swapBtn.addEventListener('click', () => {
+                isBmmToMg = !isBmmToMg;
+                updateLabels();
+            });
 
             translateButton.addEventListener('click', async () => {
                 const textToTranslate = inputTextarea.value.trim();
                 if (textToTranslate === "") {
-                    outputTextarea.value = "Ampidiro ny lahatsoratra Betsimisaraka ho adika.";
+                    outputTextarea.value = isBmmToMg
+                        ? "Ampidiro ny lahatsoratra Betsimisaraka ho adika."
+                        : "Ampidiro ny lahatsoratra Malagasy ofisialy ho adika.";
                     return;
                 }
-                
+
                 translateButton.disabled = true;
+                swapBtn.disabled = true;
                 statusMessage.textContent = "Adika...";
                 outputTextarea.value = "";
 
                 try {
-                    const response = await fetch(API_URL, {
-                        method: 'POST', // <--- This is the key line
+                    const response = await fetch(isBmmToMg ? API_BMM_MG : API_MG_BMM, {
+                        method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ text: textToTranslate })
                     });
                     const result = await response.json();
-                    
+
                     if (response.ok && result.translated_text) {
                         outputTextarea.value = result.translated_text;
-                        statusMessage.textContent = "Translation complete!";
+                        statusMessage.textContent = "Vita ny fandikan-teny!";
                     } else {
-                        outputTextarea.value = result.error || "Could not get a translation. Please try again.";
-                        statusMessage.textContent = "Error: Translation failed.";
+                        outputTextarea.value = result.error || "Tsy afaka nandika. Andramo indray.";
+                        statusMessage.textContent = "Diso: Tsy nahomby ny fandikan-teny.";
                     }
                 } catch (error) {
                     console.error('Translation error:', error);
-                    outputTextarea.value = "An error occurred. Make sure the backend server is running.";
-                    statusMessage.textContent = "Error: An unexpected error occurred.";
+                    outputTextarea.value = "Nisy olana. Ataovy azo antoka fa mandeha ny backend server.";
+                    statusMessage.textContent = "Diso: Nisy olana tampoka.";
                 } finally {
                     setTimeout(() => {
                         translateButton.disabled = false;
+                        swapBtn.disabled = false;
                         statusMessage.textContent = "";
                     }, 2000);
                 }
             });
+
+            // Initialize labels
+            updateLabels();
         });
     </script>
 </body>
